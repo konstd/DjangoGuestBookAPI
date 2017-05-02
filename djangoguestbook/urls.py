@@ -1,12 +1,15 @@
-from django.conf.urls import patterns, include, url
-
+from django.conf.urls import include
+from django.conf.urls import url
 from django.contrib import admin
-admin.autodiscover()
 
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'djangoguestbook.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
+from api.exceptions import error404
+from api.exceptions import error500
+
+handler404 = error404
+handler500 = error500
+
+urlpatterns = [
+    url(r'^api/', include('api.urls'), name='api'),
 
     url(r'^admin/', include(admin.site.urls)),
-)
+]
