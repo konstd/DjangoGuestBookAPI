@@ -22,7 +22,54 @@ Python Django Guest Book API example
   ALTER USER djangoguestuser CREATEDB;
   ```  
 
-3. Install `venv` into project's directory and enter the `venv`
-4. Install all requirements from `requirements.txt` under `venv` by using `pip`
-5. Apply migrations with `./manage.py migrate`
-6. Check yourself with `./manage.py check`
+3. Apply migrations `./manage.py migrate`
+4. Make sure all unit tests are passing `./manage.py test`
+5. Create superuser with `./manage.py createsuperuser`
+6. Start local server `./manage.py runserver`
+
+## Usage 
+1. Go to `localhost:8000/api/oauth/applications/`, authenticate as SU and create new application. Choose *Name: just a name of your choice*, *Client type: confidential* and *Authorization grant type: Resource owner password-based*. Save your **client_id** and **client_secret**.
+2. Sign up:
+```
+curl -X POST \
+  http://localhost:8000/api/sign-up/ \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/x-www-form-urlencoded' \
+  -d 'username=<USERNAME>&password=<PASSWORD>'
+```
+3. Authenticate and save your token:
+```
+curl -X POST \
+  http://localhost:8000/api/oauth/token/ \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/x-www-form-urlencoded' \
+  -d 'grant_type=password&username=<USERNAME>&password=<PASSWORD>&client_id=<CLIENT_ID>&client_secret=<CLIENT_SECRET>'
+```
+4. Always use your new token in headers `{"Authorization":"Bearer YOUR-AUTH-TOKEN"}`
+
+## Functionality
+1. Create new review object and save it's ID:
+```
+curl -X POST \
+  http://localhost:8000/api/review/add/ \
+  -H 'authorization: Bearer YOUR-AUTH-TOKEN' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/x-www-form-urlencoded' \
+  -d body=new%20body11
+``` 
+2. Create a few comments for a previous review by passing review's ID:
+```
+curl -X POST \
+  http://localhost:8000/api/review/comment/add/ \
+  -H 'authorization: Bearer YOUR-AUTH-TOKEN' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/x-www-form-urlencoded' \
+  -d 'body=new%20body22222234234234&review=1'
+```
+3. Check all saved data:
+```
+curl -X GET \
+  http://localhost:8000/api/reviews/ \
+  -H 'authorization: Bearer YOUR-AUTH-TOKEN' \
+  -H 'cache-control: no-cache'
+```
